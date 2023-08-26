@@ -1,14 +1,22 @@
 /* ============================================
+   Contribution Graph - style.scss              
+============================================ */
 
-  Contribution Graph - style.scss              
+/* -----[ Colors ]----- */
+:root {
+	--background-color: #ededed;
+	--hover-outline-color: rgba(0, 0, 0, 0.5);
+	--text-color: #7c7c7c;
+	--lvl1: #acd5f2;
+	--lvl2: #7fa8c9;
+	--lvl3: #527ba0;
+	--lvl4: #254e77;
+}
 
--------------------------------------------- */
-
-/* -----[ fonts ]----- */
-
+/* -----[ Fonts ]----- */
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 
-/* -----[ base ]----- */
+/* -----[ Base Styles ]----- */
 * {
 	box-sizing: border-box;
 	margin: 0;
@@ -22,9 +30,11 @@ html {
 
 body {
 	font-family: 'Inter', sans-serif;
-	color: #959494;
+	color: var(--text-color);
 }
 
 ul {
 	list-style: none;
+	text-transform: capitalize;
+	color: var(--text-color);
 }
