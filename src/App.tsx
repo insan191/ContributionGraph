@@ -1,38 +1,73 @@
 import axios from 'axios'
+import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import './App.scss'
 
+interface ContributionData {
+	[date: string]: number
+}
+
+interface ContributionDay {
+	date: string
+	contributions: number
+}
+
 function App() {
-	const [data, setData] = useState([])
+	const [data, setData] = useState<ContributionData>({})
 
 	useEffect(() => {
-		axios.get(import.meta.env.VITE_BASE_API_URL).then(res => setData(res.data))
+		axios
+			.get<ContributionData>(import.meta.env.VITE_BASE_API_URL)
+			.then(res => setData(res.data))
 	}, [])
 
-	const graph = () => {
-		const days = []
-		for (let i = 1; i <= 357; i++) {
-			days.push(i)
+	const days = (): ContributionDay[] => {
+		const startDate = new Date()
+		const endDate = new Date(startDate)
+		endDate.setDate(startDate.getDate() - 357)
+
+		const days: ContributionDay[] = []
+		for (
+			let currentDate = startDate;
+			currentDate > endDate;
+			currentDate.setDate(currentDate.getDate() - 1)
+		) {
+			const formatDay = format(new Date(currentDate), 'yyyy-MM-dd')
+			days.push({
+				date: formatDay,
+				contributions: data[formatDay] ?? 0,
+			})
 		}
-		return days
+
+		return days.reverse()
 	}
+
+	const giveClassName = (contributions: number): string => {
+		if (contributions > 29) {
+			return 'lvl4'
+		}
+		if (contributions > 19) {
+			return 'lvl3'
+		}
+		if (contributions > 9) {
+			return 'lvl2'
+		}
+		if (contributions > 0) {
+			return 'lvl1'
+		}
+		return ''
+	}
+
 	return (
 		<div className='app'>
 			<div className='container'>
 				<div className='graph'>
 					<ul className='graph__months'>
-						<li className='graph__months-item'>я</li>
-						<li className='graph__months-item'>ф</li>
-						<li className='graph__months-item'>м</li>
-						<li className='graph__months-item'>а</li>
-						<li className='graph__months-item'>м</li>
-						<li className='graph__months-item'>и</li>
-						<li className='graph__months-item'>и</li>
-						<li className='graph__months-item'>а</li>
-						<li className='graph__months-item'>с</li>
-						<li className='graph__months-item'>о</li>
-						<li className='graph__months-item'>н</li>
-						<li className='graph__months-item'>д</li>
+						{Array.from({ length: 12 }, (_, index) => (
+							<li className='graph__months-item' key={index}>
+								Авг
+							</li>
+						))}
 					</ul>
 					<ul className='graph__week'>
 						<li className='graph__week-item'>пн</li>
@@ -40,8 +75,11 @@ function App() {
 						<li className='graph__week-item'>пт</li>
 					</ul>
 					<ul className='graph__squares'>
-						{graph().map(day => (
-							<li className='square' key={day}></li>
+						{days().map(({ date, contributions }) => (
+							<li
+								className={`square ${giveClassName(contributions)}`}
+								key={date}
+							></li>
 						))}
 					</ul>
 				</div>
